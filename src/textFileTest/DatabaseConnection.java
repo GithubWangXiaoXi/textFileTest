@@ -41,6 +41,12 @@ public class DatabaseConnection {
         //修改数据
     }
 
+    //方便文件读取数据库的信息，并在Update方法中修改数据库里的内容
+    public Connection getConn()
+    {
+        return conn;
+    }
+
     /**
      *   创建表
      * @throws Exception
@@ -63,9 +69,10 @@ public class DatabaseConnection {
      *   数据添加
      * @throws Exception
      */
-    public void DataAdd(String tablename,String ID,String name,String sex,Double height,int years, int months, int days,String birth_place)throws Exception
+
+    public void DataAdd(String tablename,Student stu)throws Exception
     {
-        Student stu1 = new Student(ID,name,sex,height,years, months, days,birth_place);
+        Student stu1 = stu;
         String data_add = "insert into " + tablename + " (ID,NAME,SEX,HEIGHT,BIRTH,BIRTH_PLACE) values (?,?,?,?,?,?)";
         PreparedStatement DataAdd = conn.prepareStatement(data_add);
         String str1 = stu1.getID().toString();
@@ -75,6 +82,7 @@ public class DatabaseConnection {
         String str4 = stu1.getHeight().toString();
         String str5 = String.valueOf(stu1.getYear()) + "-" + String.valueOf(stu1.getMonth()) + "-" + String.valueOf(stu1.getDay());
         String str6 = stu1.getBirth_place().toString();
+
 
         DataAdd.setString(1,str1);
         //System.out.println(stu1.getID().toString());

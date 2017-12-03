@@ -2,7 +2,7 @@ package textFileTest;
 
 import java.util.*;
 
-public class Student {
+public class Student{
     private String ID;  //用String类，方便将ID转换成为字符串
     private String name;
     private String sex;
