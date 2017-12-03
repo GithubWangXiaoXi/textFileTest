@@ -257,12 +257,20 @@ public class UserInterface {
         }
         user.dataUpdate();
         input.nextLine();
+
+        System.out.println("是否查询学生数据: 是的话输入1，否则输入2");
+        int answer3 = input.nextInt();
+        input.nextLine();
+        if(answer3 == 1)
+        user.dataSearch();
 //
-//        System.out.println("是否查询学生数据: 是的话输入1，否则输入2");
-//        int answer3 = input.nextInt();
-//        input.nextLine();
-//        if(answer3 == 1)
-//        user.dataSearch();
+//        FileEncode fileEncode = new FileEncode();
 //
+//        LinkedList<String> ID = new LinkedList<>();
+//        ID.add("10001");
+//        ID.add("10002");
+//        ID.add("10003");
+//
+//        fileEncode.readDatabase("Student", ID);
     }
 }

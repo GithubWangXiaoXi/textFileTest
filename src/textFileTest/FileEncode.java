@@ -13,7 +13,7 @@ import java.util.LinkedList;
 
 public class FileEncode {
 
-    private Reader in;
+    private Reader in1,in2;
     private Student student;
     private LinkedList<Student> students;   //增加数据的链表
     private LinkedList<String> IDNumbers;
@@ -22,6 +22,7 @@ public class FileEncode {
     private int totalRow;
     private DatabaseConnection connection;
     private String tableName = "Student";
+    private OutputStream outputStream;
 
 
     //默认实例化一个学生链表,删除学生数据链表，和数据库查询连接
@@ -81,10 +82,10 @@ public class FileEncode {
      public void readDataInsertedFile(String fileName)
      {
          try {
-             in = new FileReader(fileName);
+             in1 = new FileReader(fileName);
 
              //BufferedReader可以读一行，readLine，而FileReader没有
-             BufferedReader buffer = new BufferedReader(in);
+             BufferedReader buffer = new BufferedReader(in1);
 
              String line = buffer.readLine();
 
@@ -139,8 +140,8 @@ public class FileEncode {
      public void readDataDeletedFile(String fileName)
      {
          try {
-             in = new FileReader(fileName);
-             BufferedReader buffer = new BufferedReader(in);
+             in1 = new FileReader(fileName);
+             BufferedReader buffer = new BufferedReader(in1);
 
              String line = buffer.readLine();
 
@@ -182,22 +183,56 @@ public class FileEncode {
 
          //用来添加字符串
          StringBuffer stringBuffer = new StringBuffer();
+         StringBuffer stringBuffer1 = new StringBuffer();
 
          try {
-             in = new FileReader(fileName);
+             in1 = new FileReader(fileName);
+             in2 = new FileReader(fileName);
 
              //BufferedReader可以读一行，readLine，而FileReader没有
-             BufferedReader buffer = new BufferedReader(in);
+             BufferedReader buffer1 = new BufferedReader(in1);
+             BufferedReader buffer2 = new BufferedReader(in2);
 
-             String line = buffer.readLine();
+             String line = buffer1.readLine();
 
              if (null != line) {
                  totalRow = 1;
              }
 
+             //把修改的ID号写入文件中
              while (null != line) {
                  //用正则表达式将字符串分割
                  String token[] = line.split(interval);
+
+                 String ID = token[0];
+
+                 IDNumbers.add(ID);
+
+                 String str = IDNumbers.get(totalRow-1);
+
+                 line = buffer1.readLine();
+
+                 stringBuffer.append(line+"\n");
+
+                 if (null != line) {
+                     totalRow++;
+                 }
+             }
+
+             // 先读出，再读入
+             os.write(stringBuffer.toString().getBytes());
+             os.close();
+             
+
+             buffer1.close();
+             in1.close();
+             totalRow = 0;
+
+             String line1 = buffer2.readLine();
+
+             while (null != line1) {
+                 //用正则表达式将字符串分割
+                 String token[] = line1.split(interval);
 
                  String ID = token[0];
 
@@ -264,7 +299,7 @@ public class FileEncode {
                      }
                  }
 
-                 line = buffer.readLine();
+                 line1 = buffer2.readLine();
 
                  if (null != line) {
                      totalRow++;
@@ -298,29 +333,37 @@ public class FileEncode {
 
              ResultSet rs = stat.executeQuery();
 
-             //得到每个元组属性的数据，并强置转换成student对象中的相应属性的类型
-             String id = rs.getString(1);
-             String name = rs.getString(2);
-             String sex = rs.getString(3);
-             double height = Double.parseDouble(rs.getString(4));
-             String birthday = rs.getString(5);
-             String birth_place = rs.getString(6);
+             while(rs.next())
+             {
+                 //得到每个元组属性的数据，并强置转换成student对象中的相应属性的类型
+                 String id = rs.getString(1);
+                 String name = rs.getString(2);
+                 String sex = rs.getString(3);
+                 double height = Double.parseDouble(rs.getString(4));
+                 String birthday = rs.getString(5);
+                 String birth_place = rs.getString(6);
 
-             int year = Integer.parseInt(birthday.substring(0, 4));
-             int month = Integer.parseInt(birthday.substring(5, 7));
-             int day = Integer.parseInt(birthday.substring(8, 10));
+                 int year = Integer.parseInt(birthday.substring(0, 4));
+                 int month = Integer.parseInt(birthday.substring(5, 7));
+                 int day = Integer.parseInt(birthday.substring(8, 10));
 
-             Student student = new Student(id, name, sex, height, year, month, day, birth_place);
-             studentsNew.add(student);
+                 Student student = new Student(id, name, sex, height, year, month, day, birth_place);
+                 studentsNew.add(student);
 
-             String str = studentsNew.get(i).getID()+','+studentsNew.get(i).getName()
-                     +','+studentsNew.get(i).getSex()+','+studentsNew.get(i).getHeight()
-                     +','+studentsNew.get(i).getBirthday()+','+studentsNew.get(i).getBirth_place();
+                 String str = studentsNew.get(i-1).getID()+','+studentsNew.get(i-1).getName()
+                         +','+studentsNew.get(i-1).getSex()+','+studentsNew.get(i-1).getHeight()
+                         +','+studentsNew.get(i-1).getYear() + '-'
+                         + studentsNew.get(i-1).getMonth() + '-'
+                         + studentsNew.get(i-1).getDay() +','
+                         +studentsNew.get(i-1).getBirth_place();
 
-             stringBuffer.append(str+"\n");
+                 stringBuffer.append(str+"\n");
+             }
+
          }
 
-         os.write(stringBuffer.toString().getBytes());
-         os.close();
+         outputStream = new FileOutputStream("Original_students.txt");
+         outputStream.write(stringBuffer.toString().getBytes());
+         outputStream.close();
      }
 }
