@@ -1,0 +1,2 @@
+10001,陈硕,female,180.0,1998-4-15,Guangdong
+10006,王小希,female,180.0,1997-10-10,Guangdong

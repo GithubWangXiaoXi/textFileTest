@@ -304,6 +304,7 @@ public class UserInterface {
         }
         user.dataUpdate();
         input.nextLine();
+<<<<<<< HEAD
 
         System.out.println("是否查询学生数据: 是的话输入1，否则输入2");
         int answer3 = input.nextInt();
@@ -317,7 +318,14 @@ public class UserInterface {
 //        ID.add("10001");
 //        ID.add("10002");
 //        ID.add("10003");
+=======
 //
-//        fileEncode.readDatabase("Student", ID);
+//        System.out.println("是否查询学生数据: 是的话输入1，否则输入2");
+//        int answer3 = input.nextInt();
+//        input.nextLine();
+//        if(answer3 == 1)
+//        user.dataSearch();
+>>>>>>> parent of 19be2aa... J
+//
     }
 }
