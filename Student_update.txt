@@ -1,0 +1,3 @@
+10001,,female,180,,Guangdong
+10002,,female,180,,Guangdong
+10006,,female,180,,Guangdong

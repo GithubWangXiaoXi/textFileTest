@@ -15,7 +15,7 @@ import java.util.LinkedList;
 
 public class FileEncode {
 
-    private Reader in1,in2;
+    private Reader in;
     private Student student;
     private LinkedList<Student> students;   //增加数据的链表
     private LinkedList<String> IDNumbers;
@@ -26,8 +26,11 @@ public class FileEncode {
     private int totalRow;
     private DatabaseConnection connection;
     private String tableName = "Student";
+<<<<<<< HEAD
     private OutputStream outputStream;
     private OutputStream outputStream1;
+=======
+>>>>>>> parent of 19be2aa... J
 
 
     //默认实例化一个学生链表,删除学生数据链表，和数据库查询连接
@@ -89,10 +92,10 @@ public class FileEncode {
      public void readDataInsertedFile(String fileName)
      {
          try {
-             in1 = new FileReader(fileName);
+             in = new FileReader(fileName);
 
              //BufferedReader可以读一行，readLine，而FileReader没有
-             BufferedReader buffer = new BufferedReader(in1);
+             BufferedReader buffer = new BufferedReader(in);
 
              String line = buffer.readLine();
 
@@ -153,8 +156,8 @@ public class FileEncode {
      public void readDataDeletedFile(String fileName)
      {
          try {
-             in1 = new FileReader(fileName);
-             BufferedReader buffer = new BufferedReader(in1);
+             in = new FileReader(fileName);
+             BufferedReader buffer = new BufferedReader(in);
 
              String line = buffer.readLine();
 
@@ -201,29 +204,39 @@ public class FileEncode {
 
          //用来添加字符串,存储修改文件中的ID，并储存在Updated_IDNumber.txt文件中,方便用修改的方法
          StringBuffer stringBuffer = new StringBuffer();
+<<<<<<< HEAD
 
          StringBuffer stringBuffer1 = new StringBuffer();
+=======
+>>>>>>> parent of 19be2aa... J
 
          try {
-             in1 = new FileReader(fileName);
-             in2 = new FileReader(fileName);
+             in = new FileReader(fileName);
 
              //BufferedReader可以读一行，readLine，而FileReader没有
-             BufferedReader buffer1 = new BufferedReader(in1);
-             BufferedReader buffer2 = new BufferedReader(in2);
+             BufferedReader buffer = new BufferedReader(in);
 
+<<<<<<< HEAD
              String line = buffer1.readLine();
+=======
+             String line = buffer.readLine();
+
+>>>>>>> parent of 19be2aa... J
              if (null != line) {
                  totalRow = 1;
              }
 
+<<<<<<< HEAD
              //把修改的ID号依次放入链表中，并写在文件中，方便调用删除学生元组的方法
+=======
+>>>>>>> parent of 19be2aa... J
              while (null != line) {
                  //用正则表达式将字符串分割
                  String token[] = line.split(interval);
 
                  String ID = token[0];
 
+<<<<<<< HEAD
                  IDNumbers.add(ID);
 
                  String str = IDNumbers.get(totalRow-1);
@@ -261,6 +274,14 @@ public class FileEncode {
                  String token[] = line1.split(interval);
 
                  String ID = token[0];
+=======
+                 try {
+                     readDatabase(tableName, IDNumbers);
+                 }catch(Exception e)
+                 {
+                     System.out.println("数据库读入异常");
+                 }
+>>>>>>> parent of 19be2aa... J
 
                  //匹配修改表中的每一行的ID号，对一些属性进行修改
                  for(int i = 0;i<IDNumbers.size();i++)
@@ -324,7 +345,7 @@ public class FileEncode {
                      }
                  }
 
-                 line1 = buffer2.readLine();
+                 line = buffer.readLine();
 
                  if (null != line) {
                      totalRow++;
@@ -368,6 +389,7 @@ public class FileEncode {
 
              ResultSet rs = stat.executeQuery();
 
+<<<<<<< HEAD
              while(rs.next())
              {
                  //得到每个元组属性的数据，并强置转换成student对象中的相应属性的类型
@@ -394,10 +416,34 @@ public class FileEncode {
 
                  stringBuffer.append(str+"\n");
              }
+=======
+             //得到每个元组属性的数据，并强置转换成student对象中的相应属性的类型
+             String id = rs.getString(1);
+             String name = rs.getString(2);
+             String sex = rs.getString(3);
+             double height = Double.parseDouble(rs.getString(4));
+             String birthday = rs.getString(5);
+             String birth_place = rs.getString(6);
 
+             int year = Integer.parseInt(birthday.substring(0, 4));
+             int month = Integer.parseInt(birthday.substring(5, 7));
+             int day = Integer.parseInt(birthday.substring(8, 10));
+
+             Student student = new Student(id, name, sex, height, year, month, day, birth_place);
+             studentsNew.add(student);
+>>>>>>> parent of 19be2aa... J
+
+             String str = studentsNew.get(i).getID()+','+studentsNew.get(i).getName()
+                     +','+studentsNew.get(i).getSex()+','+studentsNew.get(i).getHeight()
+                     +','+studentsNew.get(i).getBirthday()+','+studentsNew.get(i).getBirth_place();
+
+             stringBuffer.append(str+"\n");
          }
 
+<<<<<<< HEAD
          os = new FileOutputStream("Original_students.txt");
+=======
+>>>>>>> parent of 19be2aa... J
          os.write(stringBuffer.toString().getBytes());
          os.close();
      }

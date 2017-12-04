@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../Java_ProjectVersion" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../VersionControlTest" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/textFileTest" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/代码版本1" vcs="Git" />
+  </component>
+</project>
