@@ -169,6 +169,51 @@ public class UserInterface {
         }
     }
 
+    //用来帮助修改学生元组中属性的方法，增加修改后的元组
+    public void dataAdd(String url) throws Exception
+    {
+        fileEncode.readDataInsertedFile(url);
+        LinkedList<Student> students = fileEncode.getStudents();
+
+        /** 将学生对象数据批量写入数据库中 */
+
+        int length = students.size();
+        int i = 0;
+        while (students != null && i < length) {
+            student = students.get(i++);
+            connection.DataAdd(tableName, student);
+        }
+
+        //清空链表内容，方便以后继续循环操作
+        fileEncode.clearStudentsList();
+    }
+
+
+    //用来帮助修改学生元组中属性的方法，删除原有的元组
+    private void dataDelete(String url)
+    {
+        //读入删除的文件
+        fileEncode.readDataDeletedFile(url);
+
+        LinkedList<String> IDNumbers = new LinkedList<>();
+        IDNumbers = fileEncode.getIDNumber();
+        int rows = IDNumbers.size();
+
+        for(int i = 0;i<rows;i++)
+        {
+            String sql = "Delete from " + tableName+ " where ID='"+IDNumbers.get(i)+"'";
+            try {
+                connection.DataDelete(tableName, sql);
+            }catch(Exception e)
+            {
+                //System.out.println("删除语句有误");
+            }
+        }
+
+        fileEncode.clearIDNumberList();
+    }
+
+
     public void dataUpdate() throws Exception
     {
         while(updateflag)
@@ -182,18 +227,17 @@ public class UserInterface {
              */
             fileEncode.readDataUpdatedFile(url);
 
-            String original_Url = "Original_students.txt";
-            fileEncode.readDataDeletedFile(original_Url);
+            //原始学生数据所在的文件
+            String original_url = "Updated_IDNumber.txt";
+            this.dataDelete(original_url);
 
+            //更新后学生数据所在的文件
             String ultimate_url = "UltimateUpdated.txt";
-            fileEncode.readDataInsertedFile(ultimate_url);
+            this.dataAdd(ultimate_url);
 
-//            String sql = "Update "+tableName+" set NAME = '王小希' where ID = 'asld;f'";
-//            connection.DataUpdate(tableName,sql);
-
-            //清空链表内容，方便以后继续循环操作
-            fileEncode.clearIDNumberList();
+            //fileEncode.clearIDNumberList();
             fileEncode.clearStudentsNewList();
+            fileEncode.clearStudentsList();
 
             System.out.println("是否选择继续更新数据: 是的话输入1，否则输入2");
             int answer2 = input.nextInt();
@@ -209,6 +253,9 @@ public class UserInterface {
         String sql = "select * from "+ tableName + " order by ID asc";
         connection.DataSearch(tableName,sql);
     }
+
+
+
 
     public static void main(String[] args) throws  Exception{
 
@@ -233,9 +280,9 @@ public class UserInterface {
 //            addflag = true;
 //        }
 //        user.dataAdd();
-
-        //用户可以批量删除学生数据
-        //Scanner input = new Scanner(System.in);
+//
+//        //用户可以批量删除学生数据
+//        //Scanner input = new Scanner(System.in);
 //        System.out.println("是否删除学生数据: 是的话输入1，否则输入2");
 //        int answer1 = input.nextInt();
 //        deleteflag = false;
@@ -263,7 +310,7 @@ public class UserInterface {
         input.nextLine();
         if(answer3 == 1)
         user.dataSearch();
-//
+
 //        FileEncode fileEncode = new FileEncode();
 //
 //        LinkedList<String> ID = new LinkedList<>();

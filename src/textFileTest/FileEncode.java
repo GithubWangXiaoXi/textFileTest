@@ -1,5 +1,7 @@
 package textFileTest;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+
 import java.io.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,12 +19,15 @@ public class FileEncode {
     private Student student;
     private LinkedList<Student> students;   //增加数据的链表
     private LinkedList<String> IDNumbers;
-    private LinkedList<Student> studentsNew;   //修改数据的链表
+    private LinkedList<Student> studentsNew;   //修改数据的链表，主要是将数据库中相应的ID号的元组取出来
+    private LinkedList<Student> studentsNew1;   //修改数据的链表，主要是放入已经修改好的相应的ID的学生元组
     private String interval = ",";
+    private String interval1 = "-";   //用来把具体时间从生日中分割出来
     private int totalRow;
     private DatabaseConnection connection;
     private String tableName = "Student";
     private OutputStream outputStream;
+    private OutputStream outputStream1;
 
 
     //默认实例化一个学生链表,删除学生数据链表，和数据库查询连接
@@ -31,6 +36,7 @@ public class FileEncode {
         students = new LinkedList<>();
         IDNumbers = new LinkedList<>();
         studentsNew = new LinkedList<>();
+        studentsNew1 = new LinkedList<>();
         connection = new DatabaseConnection();
     }
 
@@ -72,6 +78,7 @@ public class FileEncode {
     public void clearStudentsNewList()
     {
         studentsNew.clear();
+        studentsNew1.clear();
         totalRow = 0;
     }
 
@@ -107,13 +114,19 @@ public class FileEncode {
 
                  String birth_place = token[5];
 
-                 /** 解析birthday 4+2+2*/
+                 /** 解析birthday 4+2+2, 但是对于修改学生数据时，用类型转换（parseInt）会将03转化成3*/
 
                  int year = 0, month = 0, day = 0;
 
-                 year = Integer.parseInt(birthday.substring(0, 4));
-                 month = Integer.parseInt(birthday.substring(5, 7));
-                 day = Integer.parseInt(birthday.substring(8, 10));
+                 String specificDay[] = birthday.split(interval1);
+
+                 year = Integer.parseInt(specificDay[0]);
+                 month = Integer.parseInt(specificDay[1]);
+                 day = Integer.parseInt(specificDay[2]);
+
+//                 year = Integer.parseInt(birthday.substring(0, 4));
+//                 month = Integer.parseInt(birthday.substring(5, 7));
+//                 day = Integer.parseInt(birthday.substring(8, 10));
 
                  //实例化一个学生对象,依次装在学生链表中
                  student = new Student(ID, name, sex, height, year, month, day, birth_place);
@@ -133,7 +146,7 @@ public class FileEncode {
 
 
     /**
-     * 读取删除文件
+     * 读取删除文件:注意删除文件中只有ID，没有其它属性
      * @param fileName
      */
 
@@ -173,16 +186,22 @@ public class FileEncode {
      * @param fileName
      */
 
+    /**  注：
+     *   fileName为修改数据的文件
+     *   UltimateUpdated.txt为最终修改的元组
+     *   Original_students.txt为未修改的元组，在readDataBase的方法中写入
+     */
+
      public void readDataUpdatedFile(String fileName) throws IOException
      {
 
-         //将修改后的数据写入文件中
-         OutputStream os = null;
+         //将修改后的元组写入到最终文件中
+          outputStream = new FileOutputStream("UltimateUpdated.txt");
+          outputStream1 = new FileOutputStream("Updated_IDNumber.txt");
 
-         os = new FileOutputStream("UltimateUpdated.txt");
-
-         //用来添加字符串
+         //用来添加字符串,存储修改文件中的ID，并储存在Updated_IDNumber.txt文件中,方便用修改的方法
          StringBuffer stringBuffer = new StringBuffer();
+
          StringBuffer stringBuffer1 = new StringBuffer();
 
          try {
@@ -194,12 +213,11 @@ public class FileEncode {
              BufferedReader buffer2 = new BufferedReader(in2);
 
              String line = buffer1.readLine();
-
              if (null != line) {
                  totalRow = 1;
              }
 
-             //把修改的ID号写入文件中
+             //把修改的ID号依次放入链表中，并写在文件中，方便调用删除学生元组的方法
              while (null != line) {
                  //用正则表达式将字符串分割
                  String token[] = line.split(interval);
@@ -210,19 +228,19 @@ public class FileEncode {
 
                  String str = IDNumbers.get(totalRow-1);
 
+                 stringBuffer.append(str+"\n");
+
                  line = buffer1.readLine();
-
-                 stringBuffer.append(line+"\n");
-
                  if (null != line) {
                      totalRow++;
                  }
              }
 
-             // 先读出，再读入
-             os.write(stringBuffer.toString().getBytes());
-             os.close();
-             
+             //将修改的元组ID号添加到IDNumber链表中
+             //Test output
+             outputStream1.write(stringBuffer.toString().getBytes());
+             outputStream1.close();
+
 
              buffer1.close();
              in1.close();
@@ -230,18 +248,19 @@ public class FileEncode {
 
              String line1 = buffer2.readLine();
 
+
+             try {
+                 readDatabase(tableName, IDNumbers);
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+
+
              while (null != line1) {
                  //用正则表达式将字符串分割
                  String token[] = line1.split(interval);
 
                  String ID = token[0];
-
-                 try {
-                     readDatabase(tableName, IDNumbers);
-                 }catch(Exception e)
-                 {
-                     System.out.println("数据库读入异常");
-                 }
 
                  //匹配修改表中的每一行的ID号，对一些属性进行修改
                  for(int i = 0;i<IDNumbers.size();i++)
@@ -257,18 +276,22 @@ public class FileEncode {
 
                          String birth_place = token[5];
 
-                         /** 解析birthday 4+2+2*/
+                         int year = 0, month = 0,day = 0;
 
-                         int year = Integer.parseInt(birthday.substring(0, 4));
-                         int month = Integer.parseInt(birthday.substring(5, 7));
-                         int day = Integer.parseInt(birthday.substring(8, 10));
+                         if(!birthday.equals(""))
+                         {
+                             /** 解析birthday 4+2+2*/
+                              year = Integer.parseInt(birthday.substring(0, 4));
+                              month = Integer.parseInt(birthday.substring(5, 7));
+                              day = Integer.parseInt(birthday.substring(8, 10));
+                         }
 
                          //如果更改的数据为空，就用之前的数据取代
-                         if(name.isEmpty())
+                         if(name.equals(""))
                          {
                              name = studentsNew.get(i).getName();
                          }
-                         if(sex.isEmpty())
+                         if(sex.equals(""))
                          {
                              sex = studentsNew.get(i).getSex();
                          }
@@ -276,26 +299,28 @@ public class FileEncode {
                          {
                              height = studentsNew.get(i).getHeight();
                          }
-                         if(birthday.isEmpty())
+                         if(birthday.equals(""))
                          {
                              year = studentsNew.get(i).getYear();
-                             month = studentsNew.get(i).getYear();
-                             day = studentsNew.get(i).getYear();
+                             month = studentsNew.get(i).getMonth();
+                             day = studentsNew.get(i).getDay();
                          }
-                         if(birth_place.isEmpty())
+                         if(birth_place.equals(""))
                          {
                             birth_place = studentsNew.get(i).getBirth_place();
                          }
 
                          //实例化一个已经修改好信息的学生对象,依次装在学生链表中
+                         //注意在读数据库时已经用了studentNew的链表了，所以需要用另一个数组存，否则待会两个Id相同插入就错误了
                          student = new Student(ID, name, sex, height, year, month, day, birth_place);
-                         studentsNew.add(student);
+                         studentsNew1.add(student);
 
-                         String str = studentsNew.get(i).getID()+','+studentsNew.get(i).getName()
-                                 +','+studentsNew.get(i).getSex()+','+studentsNew.get(i).getHeight()
-                                 +','+studentsNew.get(i).getBirthday()+','+studentsNew.get(i).getBirth_place();
+                         String str = ID +','+ name + ',' + sex + ',' + height + ','
+                                 + year + '-' + month + '-' + day + ',' + birth_place;
 
-                         stringBuffer.append(str+"\n");
+                         stringBuffer1.append(str+"\n");
+
+                         line1 = buffer2.readLine();
                      }
                  }
 
@@ -310,8 +335,18 @@ public class FileEncode {
          {
              System.out.println("文件读入有误");
          }
-         os.write(stringBuffer.toString().getBytes());
-         os.close();
+
+         outputStream.write(stringBuffer1.toString().getBytes());
+         outputStream.close();
+
+         try {
+             //FileEncode fileEncode = new FileEncode();
+             //this.clearStudentsNewList();
+             this.clearIDNumberList(); //防止待会删增时在原来基础上的链表添加。
+         }catch(Exception e)
+         {
+             e.printStackTrace();
+         }
      }
 
      //读一个元组，返回一个学生
@@ -350,20 +385,20 @@ public class FileEncode {
                  Student student = new Student(id, name, sex, height, year, month, day, birth_place);
                  studentsNew.add(student);
 
-                 String str = studentsNew.get(i-1).getID()+','+studentsNew.get(i-1).getName()
-                         +','+studentsNew.get(i-1).getSex()+','+studentsNew.get(i-1).getHeight()
-                         +','+studentsNew.get(i-1).getYear() + '-'
-                         + studentsNew.get(i-1).getMonth() + '-'
-                         + studentsNew.get(i-1).getDay() +','
-                         +studentsNew.get(i-1).getBirth_place();
+                 String str = studentsNew.get(i).getID()+','+studentsNew.get(i).getName()
+                         +','+studentsNew.get(i).getSex()+','+studentsNew.get(i).getHeight()
+                         +','+studentsNew.get(i).getYear() + '-'
+                         + studentsNew.get(i).getMonth() + '-'
+                         + studentsNew.get(i).getDay() +','
+                         +studentsNew.get(i).getBirth_place();
 
                  stringBuffer.append(str+"\n");
              }
 
          }
 
-         outputStream = new FileOutputStream("Original_students.txt");
-         outputStream.write(stringBuffer.toString().getBytes());
-         outputStream.close();
+         os = new FileOutputStream("Original_students.txt");
+         os.write(stringBuffer.toString().getBytes());
+         os.close();
      }
 }
