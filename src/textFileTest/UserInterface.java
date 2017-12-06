@@ -129,35 +129,35 @@ public class UserInterface {
     {
         while(deleteflag)
         {
-          System.out.println("批量删除文件，请输入文件所在位置");
+            System.out.println("批量删除文件，请输入文件所在位置");
 
-          Scanner input = new Scanner(System.in);
-          String url = input.nextLine();
+            Scanner input = new Scanner(System.in);
+            String url = input.nextLine();
 
-          //读入删除的文件
-          fileEncode.readDataDeletedFile(url);
+            //读入删除的文件
+            fileEncode.readDataDeletedFile(url);
 
-        /**
-         * 删除文件是否存在的代码
-         */
+            /**
+             * 删除文件是否存在的代码
+             */
 
-        LinkedList<String> IDNumbers = new LinkedList<>();
-        IDNumbers = fileEncode.getIDNumber();
-        int rows = IDNumbers.size();
+            LinkedList<String> IDNumbers = new LinkedList<>();
+            IDNumbers = fileEncode.getIDNumber();
+            int rows = IDNumbers.size();
 
-        for(int i = 0;i<rows;i++)
-        {
-            String sql = "Delete from " + tableName+ " where ID='"+IDNumbers.get(i)+"'";
-
-            try {
-                connection.DataDelete(tableName, sql);
-            }catch(Exception e)
+            for(int i = 0;i<rows;i++)
             {
-                //System.out.println("删除语句有误");
-            }
-         }
+                String sql = "Delete from " + tableName+ " where ID='"+IDNumbers.get(i)+"'";
 
-         //清空链表内容，方便以后继续循环操作
+                try {
+                    connection.DataDelete(tableName, sql);
+                }catch(Exception e)
+                {
+                    //System.out.println("删除语句有误");
+                }
+            }
+
+            //清空链表内容，方便以后继续循环操作
             fileEncode.clearIDNumberList();
 
             System.out.println("是否选择继续删除数据: 是的话输入1，否则输入2");
@@ -264,38 +264,38 @@ public class UserInterface {
         //用户可以连接数据库，并且得到那把"钥匙"
         DatabaseConnection connection = user.getConnection();
 
-//        //建表不成功，则继续
+        //建表不成功，则继续
 //        while(!isSuccess) {
 //            user.tableCreate();
 //        }
-
-//        //用户可以批量添加学生数据
-//        Scanner input = new Scanner(System.in);
-//        System.out.println("是否添加学生数据: 是的话输入1，否则输入2");
-//        int answer = input.nextInt();
-//        input.nextLine();
-//        addflag = false;
-//        if(1 == answer)
-//        {
-//            addflag = true;
-//        }
-//        user.dataAdd();
 //
-//        //用户可以批量删除学生数据
-//        //Scanner input = new Scanner(System.in);
-//        System.out.println("是否删除学生数据: 是的话输入1，否则输入2");
-//        int answer1 = input.nextInt();
-//        deleteflag = false;
-//        if(1 == answer1)
-//        {
-//            deleteflag = true;
-//        }
-//        user.dataDelete();
+//        //用户可以批量添加学生数据
+        Scanner input = new Scanner(System.in);
+        System.out.println("是否添加学生数据: 是的话输入1，否则输入2");
+        int answer = input.nextInt();
+        input.nextLine();
+        addflag = false;
+        if(1 == answer)
+        {
+            addflag = true;
+        }
+        user.dataAdd();
+
+        //用户可以批量删除学生数据
+        //Scanner input = new Scanner(System.in);
+        System.out.println("是否删除学生数据: 是的话输入1，否则输入2");
+        int answer1 = input.nextInt();
+        deleteflag = false;
+        if(1 == answer1)
+        {
+            deleteflag = true;
+        }
+        user.dataDelete();
 
 
         //用户可以更新学生数据
         System.out.println("是否更改学生数据: 是的话输入1，否则输入2");
-        Scanner input = new Scanner(System.in);
+        //Scanner input = new Scanner(System.in);
         int answer2 = input.nextInt();
         updateflag = false;
         if(1 == answer2)
@@ -304,13 +304,12 @@ public class UserInterface {
         }
         user.dataUpdate();
         input.nextLine();
-<<<<<<< HEAD
 
         System.out.println("是否查询学生数据: 是的话输入1，否则输入2");
         int answer3 = input.nextInt();
         input.nextLine();
         if(answer3 == 1)
-        user.dataSearch();
+            user.dataSearch();
 
 //        FileEncode fileEncode = new FileEncode();
 //
@@ -318,14 +317,21 @@ public class UserInterface {
 //        ID.add("10001");
 //        ID.add("10002");
 //        ID.add("10003");
-=======
 //
-//        System.out.println("是否查询学生数据: 是的话输入1，否则输入2");
-//        int answer3 = input.nextInt();
-//        input.nextLine();
-//        if(answer3 == 1)
-//        user.dataSearch();
->>>>>>> parent of 19be2aa... J
-//
+//        fileEncode.readDatabase("Student", ID);
+
+        //将数据写入到csv文件啊中
+        System.out.println("是否通过筛选籍贯将学生数据写入到csv文件中: 是的话输入1，否则输入2");
+        int answer4 = input.nextInt();
+        input.nextLine();
+        if(answer4 == 1)
+        {
+            TrivialFunctions a = new TrivialFunctions();
+            System.out.println("csv文件路径: ");
+            String path = input.nextLine();
+            System.out.println("籍贯为:(最多写三个字): ");
+            String birth = input.nextLine();
+            a.WriteFromDatabaseToCsv(path,birth);
+        }
     }
 }

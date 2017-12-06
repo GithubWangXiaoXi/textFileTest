@@ -3,6 +3,7 @@ package textFileTest;
 import sun.security.jca.GetInstance;
 
 import java.sql.*;
+import java.util.LinkedList;
 
 /**
  * Created by Administrator on 2017/12/1 0001.
@@ -13,7 +14,12 @@ public class DatabaseConnection {
     private String username = "root";
     private String password = "19971010a";
 
+    private String tableName = "student";
+
     private Connection conn =null;
+
+    private LinkedList<Student> students;   //转化成String类型的中间媒介
+    private LinkedList<String> studentsStr;  //为了返回数据库中的学生元组，方便排序并写入csv文件中
 
     public DatabaseConnection() throws Exception
     {
@@ -133,6 +139,55 @@ public class DatabaseConnection {
                     +rs.getString(3)+"\t"+rs.getString(4)+"\t"
                     +rs.getString(5)+"\t"+rs.getString(6));
         }
+    }
+
+    //用链表储存student，再最终转化成String类型每个学生元组到String链表中
+    public LinkedList<String> getStudentsStr(String sqlID) throws SQLException
+    {
+        String sql;
+        if(sqlID.equals("No")) {
+             sql = "select * from " + tableName;
+        }
+
+        else{
+            sql = "select * from "+tableName+" where ID = '"+sqlID+"'";
+        }
+
+        PreparedStatement stat = conn.prepareStatement(sql);
+        ResultSet rs = stat.executeQuery(sql);
+
+        int studentTotal = 0;
+
+        students = new LinkedList<>();
+        studentsStr = new LinkedList<>();
+
+        while(rs.next())
+        {
+            String id = rs.getString(1);
+            String name = rs.getString(2);
+            String sex = rs.getString(3);
+            double height = Double.parseDouble(rs.getString(4));
+            String birthday = rs.getString(5);
+            String birth_place = rs.getString(6);
+
+            int year = Integer.parseInt(birthday.substring(0, 4));
+            int month = Integer.parseInt(birthday.substring(5, 7));
+            int day = Integer.parseInt(birthday.substring(8, 10));
+
+            Student student = new Student(id, name, sex, height, year, month, day, birth_place);
+            students.add(student);
+
+            String str = students.get(studentTotal).getID()+','+students.get(studentTotal).getName()
+                    +','+students.get(studentTotal).getSex()+','+students.get(studentTotal).getHeight()
+                    +','+students.get(studentTotal).getYear() + '-'
+                    + students.get(studentTotal).getMonth() + '-'
+                    + students.get(studentTotal).getDay() +','
+                    +students.get(studentTotal).getBirth_place();
+
+            studentsStr.add(str);
+            studentTotal++;
+        }
+        return studentsStr;
     }
 
     public static void main(String[] args) throws Exception{

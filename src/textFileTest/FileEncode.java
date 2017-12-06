@@ -15,7 +15,7 @@ import java.util.LinkedList;
 
 public class FileEncode {
 
-    private Reader in;
+    private Reader in1,in2;
     private Student student;
     private LinkedList<Student> students;   //增加数据的链表
     private LinkedList<String> IDNumbers;
@@ -26,11 +26,8 @@ public class FileEncode {
     private int totalRow;
     private DatabaseConnection connection;
     private String tableName = "Student";
-<<<<<<< HEAD
     private OutputStream outputStream;
     private OutputStream outputStream1;
-=======
->>>>>>> parent of 19be2aa... J
 
 
     //默认实例化一个学生链表,删除学生数据链表，和数据库查询连接
@@ -89,63 +86,63 @@ public class FileEncode {
     /**
      *   批量读取文件内容
      */
-     public void readDataInsertedFile(String fileName)
-     {
-         try {
-             in = new FileReader(fileName);
+    public void readDataInsertedFile(String fileName)
+    {
+        try {
+            in1 = new FileReader(fileName);
 
-             //BufferedReader可以读一行，readLine，而FileReader没有
-             BufferedReader buffer = new BufferedReader(in);
+            //BufferedReader可以读一行，readLine，而FileReader没有
+            BufferedReader buffer = new BufferedReader(in1);
 
-             String line = buffer.readLine();
+            String line = buffer.readLine();
 
-             if (null != line) {
-                 totalRow = 1;
-             }
+            if (null != line) {
+                totalRow = 1;
+            }
 
-             while (null != line) {
-                 //用正则表达式将字符串分割
-                 String token[] = line.split(interval);
+            while (null != line) {
+                //用正则表达式将字符串分割
+                String token[] = line.split(interval);
 
-                 String ID = token[0];
-                 String name = token[1];
-                 String sex = token[2];
-                 double height = Double.parseDouble(token[3]);
+                String ID = token[0];
+                String name = token[1];
+                String sex = token[2];
+                double height = Double.parseDouble(token[3]);
 
-                 /** birthday需要再次解析，因为birthday是3个int类型合成的*/
-                 String birthday = token[4];
+                /** birthday需要再次解析，因为birthday是3个int类型合成的*/
+                String birthday = token[4];
 
-                 String birth_place = token[5];
+                String birth_place = token[5];
 
-                 /** 解析birthday 4+2+2, 但是对于修改学生数据时，用类型转换（parseInt）会将03转化成3*/
+                /** 解析birthday 4+2+2, 但是对于修改学生数据时，用类型转换（parseInt）会将03转化成3*/
 
-                 int year = 0, month = 0, day = 0;
+                int year = 0, month = 0, day = 0;
 
-                 String specificDay[] = birthday.split(interval1);
+                String specificDay[] = birthday.split(interval1);
 
-                 year = Integer.parseInt(specificDay[0]);
-                 month = Integer.parseInt(specificDay[1]);
-                 day = Integer.parseInt(specificDay[2]);
+                year = Integer.parseInt(specificDay[0]);
+                month = Integer.parseInt(specificDay[1]);
+                day = Integer.parseInt(specificDay[2]);
 
 //                 year = Integer.parseInt(birthday.substring(0, 4));
 //                 month = Integer.parseInt(birthday.substring(5, 7));
 //                 day = Integer.parseInt(birthday.substring(8, 10));
 
-                 //实例化一个学生对象,依次装在学生链表中
-                 student = new Student(ID, name, sex, height, year, month, day, birth_place);
-                 students.add(student);
+                //实例化一个学生对象,依次装在学生链表中
+                student = new Student(ID, name, sex, height, year, month, day, birth_place);
+                students.add(student);
 
-                 line = buffer.readLine();
+                line = buffer.readLine();
 
-                 if (null != line) {
-                     totalRow++;
-                 }
-             } //流需要关闭吗？
-         }catch(IOException e)
-         {
-             System.out.println("文件读入有误");
-         }
-     }
+                if (null != line) {
+                    totalRow++;
+                }
+            } //流需要关闭吗？
+        }catch(IOException e)
+        {
+            System.out.println("文件读入有误");
+        }
+    }
 
 
     /**
@@ -153,35 +150,35 @@ public class FileEncode {
      * @param fileName
      */
 
-     public void readDataDeletedFile(String fileName)
-     {
-         try {
-             in = new FileReader(fileName);
-             BufferedReader buffer = new BufferedReader(in);
+    public void readDataDeletedFile(String fileName)
+    {
+        try {
+            in1 = new FileReader(fileName);
+            BufferedReader buffer = new BufferedReader(in1);
 
-             String line = buffer.readLine();
+            String line = buffer.readLine();
 
-             if(line!=null)
-             {
-                  totalRow = 1;
-             }
+            if(line!=null)
+            {
+                totalRow = 1;
+            }
 
-             while(line!=null) {
-                 String ID = line;
+            while(line!=null) {
+                String ID = line;
 
-                 IDNumbers.add(ID);
+                IDNumbers.add(ID);
 
-                 line = buffer.readLine();
-                 if (line != null) {
-                     totalRow++;
-                 }
-             }
+                line = buffer.readLine();
+                if (line != null) {
+                    totalRow++;
+                }
+            }
 
-         }catch(IOException e)
-         {
-             System.out.println("文件读入有误");
-         }
-     }
+        }catch(IOException e)
+        {
+            System.out.println("文件读入有误");
+        }
+    }
 
     /**
      *     读取更新文件（具体思路：把更新文件中的ID先读出来，到数据库已有文件把更改文件中存在的ID的元组
@@ -195,256 +192,231 @@ public class FileEncode {
      *   Original_students.txt为未修改的元组，在readDataBase的方法中写入
      */
 
-     public void readDataUpdatedFile(String fileName) throws IOException
-     {
+    public void readDataUpdatedFile(String fileName) throws IOException
+    {
 
-         //将修改后的元组写入到最终文件中
-          outputStream = new FileOutputStream("UltimateUpdated.txt");
-          outputStream1 = new FileOutputStream("Updated_IDNumber.txt");
+        //将修改后的元组写入到最终文件中
+        outputStream = new FileOutputStream("UltimateUpdated.txt");
+        outputStream1 = new FileOutputStream("Updated_IDNumber.txt");
 
-         //用来添加字符串,存储修改文件中的ID，并储存在Updated_IDNumber.txt文件中,方便用修改的方法
-         StringBuffer stringBuffer = new StringBuffer();
-<<<<<<< HEAD
+        //用来添加字符串,存储修改文件中的ID，并储存在Updated_IDNumber.txt文件中,方便用修改的方法
+        StringBuffer stringBuffer = new StringBuffer();
 
-         StringBuffer stringBuffer1 = new StringBuffer();
-=======
->>>>>>> parent of 19be2aa... J
+        StringBuffer stringBuffer1 = new StringBuffer();
 
-         try {
-             in = new FileReader(fileName);
+        try {
+            in1 = new FileReader(fileName);
+            in2 = new FileReader(fileName);
 
-             //BufferedReader可以读一行，readLine，而FileReader没有
-             BufferedReader buffer = new BufferedReader(in);
+            //BufferedReader可以读一行，readLine，而FileReader没有
+            BufferedReader buffer1 = new BufferedReader(in1);
+            BufferedReader buffer2 = new BufferedReader(in2);
 
-<<<<<<< HEAD
-             String line = buffer1.readLine();
-=======
-             String line = buffer.readLine();
+            String line = buffer1.readLine();
+            if (null != line) {
+                totalRow = 1;
+            }
 
->>>>>>> parent of 19be2aa... J
-             if (null != line) {
-                 totalRow = 1;
-             }
+            //把修改的ID号依次放入链表中，并写在文件中，方便调用删除学生元组的方法
+            while (null != line) {
+                //用正则表达式将字符串分割
+                String token[] = line.split(interval);
 
-<<<<<<< HEAD
-             //把修改的ID号依次放入链表中，并写在文件中，方便调用删除学生元组的方法
-=======
->>>>>>> parent of 19be2aa... J
-             while (null != line) {
-                 //用正则表达式将字符串分割
-                 String token[] = line.split(interval);
+                String ID = token[0];
 
-                 String ID = token[0];
+                IDNumbers.add(ID);
 
-<<<<<<< HEAD
-                 IDNumbers.add(ID);
+                String str = IDNumbers.get(totalRow-1);
 
-                 String str = IDNumbers.get(totalRow-1);
+                stringBuffer.append(str+"\n");
 
-                 stringBuffer.append(str+"\n");
+                line = buffer1.readLine();
+                if (null != line) {
+                    totalRow++;
+                }
+            }
 
-                 line = buffer1.readLine();
-                 if (null != line) {
-                     totalRow++;
-                 }
-             }
-
-             //将修改的元组ID号添加到IDNumber链表中
-             //Test output
-             outputStream1.write(stringBuffer.toString().getBytes());
-             outputStream1.close();
+            //将修改的元组ID号添加到IDNumber链表中
+            //Test output
+            outputStream1.write(stringBuffer.toString().getBytes());
+            outputStream1.close();
 
 
-             buffer1.close();
-             in1.close();
-             totalRow = 0;
+            buffer1.close();
+            in1.close();
+            totalRow = 0;
 
-             String line1 = buffer2.readLine();
+            try {
+                readDatabase(tableName, IDNumbers);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
+            String line1 = buffer2.readLine();
 
-             try {
-                 readDatabase(tableName, IDNumbers);
-             } catch (Exception e) {
-                 e.printStackTrace();
-             }
+            while (null != line1) {
 
+                //用正则表达式将字符串分割
+                String token[] = line1.split(interval);
 
-             while (null != line1) {
-                 //用正则表达式将字符串分割
-                 String token[] = line1.split(interval);
+                String ID = token[0];
 
-                 String ID = token[0];
-=======
-                 try {
-                     readDatabase(tableName, IDNumbers);
-                 }catch(Exception e)
-                 {
-                     System.out.println("数据库读入异常");
-                 }
->>>>>>> parent of 19be2aa... J
+                //匹配修改表中的每一行的ID号，对一些属性进行修改   这里注意索引index与size之间的关系，要处理好数组越界的问题
+                for(int i = 0;i<studentsNew.size();i++) {
 
-                 //匹配修改表中的每一行的ID号，对一些属性进行修改
-                 for(int i = 0;i<IDNumbers.size();i++)
-                 {
-                     if(ID.equals(studentsNew.get(i).getID()))
-                     {
-                         String name = token[1];
-                         String sex = token[2];
-                         double height = Double.parseDouble(token[3]);
+                    if(ID.equals(studentsNew.get(i).getID()))
+                    {
+                        String name = token[1];
+                        String sex = token[2];
+                        double height = Double.parseDouble(token[3]);
 
-                         /** birthday需要再次解析，因为birthday是3个int类型合成的*/
-                         String birthday = token[4];
+                        /** birthday需要再次解析，因为birthday是3个int类型合成的*/
+                        String birthday = token[4];
 
-                         String birth_place = token[5];
+                        String birth_place = token[5];
 
-                         int year = 0, month = 0,day = 0;
+                        int year = 0, month = 0,day = 0;
 
-                         if(!birthday.equals(""))
-                         {
-                             /** 解析birthday 4+2+2*/
-                              year = Integer.parseInt(birthday.substring(0, 4));
-                              month = Integer.parseInt(birthday.substring(5, 7));
-                              day = Integer.parseInt(birthday.substring(8, 10));
-                         }
+                        if(!birthday.equals(""))
+                        {
+                            /** 解析birthday 4+2+2*/
+                            year = Integer.parseInt(birthday.substring(0, 4));
+                            month = Integer.parseInt(birthday.substring(5, 7));
+                            day = Integer.parseInt(birthday.substring(8, 10));
+                        }
 
-                         //如果更改的数据为空，就用之前的数据取代
-                         if(name.equals(""))
-                         {
-                             name = studentsNew.get(i).getName();
-                         }
-                         if(sex.equals(""))
-                         {
-                             sex = studentsNew.get(i).getSex();
-                         }
-                         if(height==0)
-                         {
-                             height = studentsNew.get(i).getHeight();
-                         }
-                         if(birthday.equals(""))
-                         {
-                             year = studentsNew.get(i).getYear();
-                             month = studentsNew.get(i).getMonth();
-                             day = studentsNew.get(i).getDay();
-                         }
-                         if(birth_place.equals(""))
-                         {
+                        //如果更改的数据为空，就用之前的数据取代
+                        if(name.equals(""))
+                        {
+                            name = studentsNew.get(i).getName();
+                        }
+                        if(sex.equals(""))
+                        {
+                            sex = studentsNew.get(i).getSex();
+                        }
+                        if(height==0)
+                        {
+                            height = studentsNew.get(i).getHeight();
+                        }
+                        if(birthday.equals(""))
+                        {
+                            year = studentsNew.get(i).getYear();
+                            month = studentsNew.get(i).getMonth();
+                            day = studentsNew.get(i).getDay();
+                        }
+                        if(birth_place.equals(""))
+                        {
                             birth_place = studentsNew.get(i).getBirth_place();
-                         }
+                        }
 
-                         //实例化一个已经修改好信息的学生对象,依次装在学生链表中
-                         //注意在读数据库时已经用了studentNew的链表了，所以需要用另一个数组存，否则待会两个Id相同插入就错误了
-                         student = new Student(ID, name, sex, height, year, month, day, birth_place);
-                         studentsNew1.add(student);
+                        //实例化一个已经修改好信息的学生对象,依次装在学生链表中
+                        //注意在读数据库时已经用了studentNew的链表了，所以需要用另一个数组存，否则待会两个Id相同插入就错误了
+                        student = new Student(ID, name, sex, height, year, month, day, birth_place);
+                        studentsNew1.add(student);
 
-                         String str = ID +','+ name + ',' + sex + ',' + height + ','
-                                 + year + '-' + month + '-' + day + ',' + birth_place;
+                        String str = ID +','+ name + ',' + sex + ',' + height + ','
+                                + year + '-' + month + '-' + day + ',' + birth_place;
 
-                         stringBuffer1.append(str+"\n");
+                        stringBuffer1.append(str+"\n");
+                        break;
+                    }
+                }
+                line1 = buffer2.readLine();
+            }
 
-                         line1 = buffer2.readLine();
-                     }
-                 }
+                line1 = buffer2.readLine();
 
-                 line = buffer.readLine();
+                if (null != line) {
+                    totalRow++;
+                }
+             //流需要关闭吗？
+        }catch(IOException e)
+        {
+            System.out.println("文件读入有误");
+        }
 
-                 if (null != line) {
-                     totalRow++;
-                 }
+        outputStream.write(stringBuffer1.toString().getBytes());
+        outputStream.close();
 
-             } //流需要关闭吗？
-         }catch(IOException e)
-         {
-             System.out.println("文件读入有误");
-         }
+        try {
+            //FileEncode fileEncode = new FileEncode();
+            //this.clearStudentsNewList();
+            this.clearIDNumberList(); //防止待会删增时在原来基础上的链表添加。
+        }catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 
-         outputStream.write(stringBuffer1.toString().getBytes());
-         outputStream.close();
+    //读一个元组，返回一个学生
+    public void readDatabase(String tablename, LinkedList<String> ID) throws Exception
+    {
+        //写出到相对位置的文件中
+        OutputStream os = new FileOutputStream("Original_students.txt");
 
-         try {
-             //FileEncode fileEncode = new FileEncode();
-             //this.clearStudentsNewList();
-             this.clearIDNumberList(); //防止待会删增时在原来基础上的链表添加。
-         }catch(Exception e)
-         {
-             e.printStackTrace();
-         }
-     }
+        //用来添加字符串
+        StringBuffer stringBuffer = new StringBuffer();
+        int studentTotal = 0;
 
-     //读一个元组，返回一个学生
-     public void readDatabase(String tablename, LinkedList<String> ID) throws Exception
-     {
-         //写出到相对位置的文件中
-         OutputStream os = new FileOutputStream("Original_students.txt");
+        int length = ID.size();
+        for (int i = 0; i < length; i++) {
 
-         //用来添加字符串
-         StringBuffer stringBuffer = new StringBuffer();
+            //批量产生sql语句
+            String sql = "select * from " + tablename + " where ID='" + ID.get(i) + "'";
 
-         int length = ID.size();
-         for (int i = 0; i < length; i++) {
+            PreparedStatement stat = connection.getConn().prepareStatement(sql);
 
-             //批量产生sql语句
-             String sql = "select * from " + tablename + " where ID='" + ID.get(i) + "'";
+            ResultSet rs = stat.executeQuery();
 
-             PreparedStatement stat = connection.getConn().prepareStatement(sql);
+            try {
+                while(rs.next())
+                {
+                    //得到每个元组属性的数据，并强置转换成student对象中的相应属性的类型
+                    String id = rs.getString(1);
+                    String name = rs.getString(2);
+                    String sex = rs.getString(3);
+                    double height = Double.parseDouble(rs.getString(4));
+                    String birthday = rs.getString(5);
+                    String birth_place = rs.getString(6);
 
-             ResultSet rs = stat.executeQuery();
+                    int year = Integer.parseInt(birthday.substring(0, 4));
+                    int month = Integer.parseInt(birthday.substring(5, 7));
+                    int day = Integer.parseInt(birthday.substring(8, 10));
 
-<<<<<<< HEAD
-             while(rs.next())
-             {
-                 //得到每个元组属性的数据，并强置转换成student对象中的相应属性的类型
-                 String id = rs.getString(1);
-                 String name = rs.getString(2);
-                 String sex = rs.getString(3);
-                 double height = Double.parseDouble(rs.getString(4));
-                 String birthday = rs.getString(5);
-                 String birth_place = rs.getString(6);
+                    Student student = new Student(id, name, sex, height, year, month, day, birth_place);
+                    studentsNew.add(student);
 
-                 int year = Integer.parseInt(birthday.substring(0, 4));
-                 int month = Integer.parseInt(birthday.substring(5, 7));
-                 int day = Integer.parseInt(birthday.substring(8, 10));
+                    String str = studentsNew.get(studentTotal).getID()+','+studentsNew.get(studentTotal).getName()
+                            +','+studentsNew.get(studentTotal).getSex()+','+studentsNew.get(studentTotal).getHeight()
+                            +','+studentsNew.get(studentTotal).getYear() + '-'
+                            + studentsNew.get(studentTotal).getMonth() + '-'
+                            + studentsNew.get(studentTotal).getDay() +','
+                            +studentsNew.get(studentTotal).getBirth_place();
 
-                 Student student = new Student(id, name, sex, height, year, month, day, birth_place);
-                 studentsNew.add(student);
+                    stringBuffer.append(str+"\n");
 
-                 String str = studentsNew.get(i).getID()+','+studentsNew.get(i).getName()
-                         +','+studentsNew.get(i).getSex()+','+studentsNew.get(i).getHeight()
-                         +','+studentsNew.get(i).getYear() + '-'
-                         + studentsNew.get(i).getMonth() + '-'
-                         + studentsNew.get(i).getDay() +','
-                         +studentsNew.get(i).getBirth_place();
+                    studentTotal++;
+                    //System.out.println("此ID"+ID.get(i)+"已写入文件");
+                }
+            }catch (IndexOutOfBoundsException e)
+            {
+                //System.out.println("此ID"+ID.get(i)+"不存在");
+                e.printStackTrace();
+            }
+        }
+        os = new FileOutputStream("Original_students.txt");
+        os.write(stringBuffer.toString().getBytes());
+        os.close();
+    }
 
-                 stringBuffer.append(str+"\n");
-             }
-=======
-             //得到每个元组属性的数据，并强置转换成student对象中的相应属性的类型
-             String id = rs.getString(1);
-             String name = rs.getString(2);
-             String sex = rs.getString(3);
-             double height = Double.parseDouble(rs.getString(4));
-             String birthday = rs.getString(5);
-             String birth_place = rs.getString(6);
-
-             int year = Integer.parseInt(birthday.substring(0, 4));
-             int month = Integer.parseInt(birthday.substring(5, 7));
-             int day = Integer.parseInt(birthday.substring(8, 10));
-
-             Student student = new Student(id, name, sex, height, year, month, day, birth_place);
-             studentsNew.add(student);
->>>>>>> parent of 19be2aa... J
-
-             String str = studentsNew.get(i).getID()+','+studentsNew.get(i).getName()
-                     +','+studentsNew.get(i).getSex()+','+studentsNew.get(i).getHeight()
-                     +','+studentsNew.get(i).getBirthday()+','+studentsNew.get(i).getBirth_place();
-
-             stringBuffer.append(str+"\n");
-         }
-
-<<<<<<< HEAD
-         os = new FileOutputStream("Original_students.txt");
-=======
->>>>>>> parent of 19be2aa... J
-         os.write(stringBuffer.toString().getBytes());
-         os.close();
-     }
+    //对字符串转码
+    private String tranStr(String oldstr) {
+        String newstr = "";
+        try {
+            newstr = new String(oldstr.getBytes("ISO-8859-1"), "GBK");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return newstr;
+    }
 }
