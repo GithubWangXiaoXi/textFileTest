@@ -201,6 +201,19 @@ public class TrivialFunctions{
         }
     }
 
+    //通过isDigit函数判断字符串是否是数字
+    public static boolean isNumeric(String str)
+    {
+        for(int i = 0;i<str.length();i++)
+        {
+            if(!Character.isDigit(str.charAt(i)))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static void main(String[] args) throws Exception{
 
     }
