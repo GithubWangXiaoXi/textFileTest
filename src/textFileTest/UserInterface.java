@@ -398,22 +398,16 @@ public class UserInterface extends JFrame{
         String username = jTextField1.getText();
         String password = jPasswordField.getText();
 
-        if(!username.equals(connection.getUsername()))
+        if(username.equals(connection.getUsername())&&password.equals(connection.getPassword()))
         {
-            JOptionPane.showMessageDialog(jFrame,"用户名输入错误","警告",JOptionPane.WARNING_MESSAGE);
-            jFrame.requestFocus();
-            return;
-        }
-        else if(!username.equals(connection.getUsername()))
-        {
-            JOptionPane.showMessageDialog(jFrame,"密码输入错误","警告",JOptionPane.WARNING_MESSAGE);
-            jFrame.requestFocus();
-            return;
-        }
-        else{
             JOptionPane.showConfirmDialog(jFrame,"登录成功","提示",JOptionPane.YES_OPTION);
             this.initComponents();
             jFrame.setVisible(false);
+        }
+        else{
+            JOptionPane.showMessageDialog(jFrame,"用户名或密码输入错误","警告",JOptionPane.WARNING_MESSAGE);
+            jFrame.requestFocus();
+            return;
         }
     }
 
