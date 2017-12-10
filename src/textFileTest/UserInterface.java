@@ -32,6 +32,7 @@ public class UserInterface extends JFrame{
 
 
     //UI界面
+    //增删改查界面
     private JPanel jPanel1;
     private JPanel jPanel2;
 
@@ -43,15 +44,75 @@ public class UserInterface extends JFrame{
     private JButton jButton1;
     private JScrollPane jScrollPane;
 
+    //用户登录界面
+    private JFrame jFrame; //因为增删改查界面已经用this了,两个界面不能在同一个JFrame上
+    private JPanel jPanel3;
+    private JLabel jLabel2;  //用户名
+    private JLabel jLabel3;  //密码
+    private JTextField jTextField1;  //用户名输入
+    private JPasswordField jPasswordField;  //密码输入
+    private JButton jButton2; //确定
+    private JButton jButton3;  //重新输入
 
     public UserInterface() throws Exception
     {
         connection = new DatabaseConnection();
         fileEncode = new FileEncode();
         student = new Student();
-        this.initComponents();
+        this.logIn();
     }
 
+    private void logIn()
+    {
+        jFrame = new JFrame();
+        jPanel3 = new JPanel();
+        jPanel3.setBorder(BorderFactory.createTitledBorder("用户登录"));
+
+        jLabel2 = new JLabel();
+        jLabel2.setText("用户");
+        jLabel2.setForeground(new Color(0,0,255));
+
+        jTextField1 = new JTextField(20);
+
+        jLabel3 = new JLabel();
+        jLabel3.setText("密码");
+        jLabel3.setForeground(new Color(0,0,255));
+
+        jPasswordField = new JPasswordField(20);
+
+        jButton2 = new JButton();
+        jButton2.setText("登录");
+        jButton2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jButton2ActionPerformed();
+            }
+        });
+
+        jButton3 = new JButton();
+        jButton3.setText("重置");
+        jButton3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jButton3ActionPerformed();
+            }
+        });
+
+        jPanel3.add(jLabel2,BorderLayout.NORTH);
+        jPanel3.add(jTextField1);
+        jPanel3.add(jLabel3,BorderLayout.NORTH);
+        jPanel3.add(jPasswordField);
+
+        jPanel3.add(jButton2);
+        jPanel3.add(jButton3);
+
+        jFrame.setAlwaysOnTop(true);
+        jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        jFrame.setResizable(false);
+        jFrame.setSize(300,160);
+        jFrame.setContentPane(jPanel3);
+        jFrame.setVisible(true);
+    }
 
     private void initComponents()
     {
@@ -278,6 +339,7 @@ public class UserInterface extends JFrame{
                             connection.TableCreate(tableName);
                             String str1 = texts.get(1)+"建表成功";
                             jTextArea.setText(str1);
+
                         } catch (Exception f) {
                             String str = "建表错误,该表之前已建立";
                             jTextArea.setText(str);
@@ -327,6 +389,39 @@ public class UserInterface extends JFrame{
     {
         jTextArea.setText("");
         jTextField.setText("");
+        texts.clear();
+    }
+
+    //验证用户的用户名或密码是否输入正确
+    private void jButton2ActionPerformed()
+    {
+        String username = jTextField1.getText();
+        String password = jPasswordField.getText();
+
+        if(!username.equals(connection.getUsername()))
+        {
+            JOptionPane.showMessageDialog(jFrame,"用户名输入错误","警告",JOptionPane.WARNING_MESSAGE);
+            jFrame.requestFocus();
+            return;
+        }
+        else if(!username.equals(connection.getUsername()))
+        {
+            JOptionPane.showMessageDialog(jFrame,"密码输入错误","警告",JOptionPane.WARNING_MESSAGE);
+            jFrame.requestFocus();
+            return;
+        }
+        else{
+            JOptionPane.showConfirmDialog(jFrame,"登录成功","提示",JOptionPane.YES_OPTION);
+            this.initComponents();
+            jFrame.setVisible(false);
+        }
+    }
+
+    private void jButton3ActionPerformed()
+    {
+        jTextField1.setText("");
+        jPasswordField.setText("");
+
     }
 
 
@@ -394,7 +489,6 @@ public class UserInterface extends JFrame{
         connection.DataSearch(tableName,sql);
     }
 
-
     public static void main(String[] args) throws  Exception{
 
         UserInterface user = new UserInterface();
@@ -410,3 +504,4 @@ public class UserInterface extends JFrame{
 
     }
 }
+
